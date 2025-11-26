@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agentic Clinical Extraction and Analysis</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007aff;
+            /* Apple blue */
+            --primary-hover: #0062cc;
+            --bg-color: #f5f5f7;
+            /* Light gray background */
+            --card-bg: #ffffff;
+            --text-color: #1d1d1f;
+            --secondary-text: #86868b;
+            --border-color: #d2d2d7;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-weight: 600;
+            font-size: 2.5rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: var(--secondary-text);
+            font-size: 1.1rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: #e5e5ea;
+            padding: 4px;
+            border-radius: 10px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.2s ease;
+        }
+
+        .card h2 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            resize: vertical;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button.secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        button.secondary:hover {
+            background-color: rgba(0, 122, 255, 0.05);
+        }
+
+        button.danger {
+            background-color: #ff3b30;
+        }
+
+        button.danger:hover {
+            background-color: #d63026;
+        }
+
+        .file-input-wrapper {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="file"] {
+            font-size: 0.9rem;
+            color: var(--secondary-text);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        .doc-info {
+            font-weight: 500;
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .doc-actions button {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background: #f5f5f7;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'SF Mono', SFMono-Regular, ui-monospace, monospace;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-section {
+            margin-top: 20px;
+        }
+
+        .result-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        /* Loading spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .icon-inline {
+            height: 1.2em;
+            width: 1.2em;
+            vertical-align: text-bottom;
+            margin: 0 4px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Agentic Clinical Extraction and Analysis</h1>
+            <p class="subtitle">Written with assistance from Gemini <svg class="icon-inline" role="img"
+                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <title>Google Gemini</title>
+                    <path
+                        d="M11.04 19.32Q12 21.51 12 24q0-2.49.93-4.68.96-2.19 2.58-3.81t3.81-2.55Q21.51 12 24 12q-2.49 0-4.68-.93a12.3 12.3 0 0 1-3.81-2.58 12.3 12.3 0 0 1-2.58-3.81Q12 2.49 12 0q0 2.49-.96 4.68-.93 2.19-2.55 3.81a12.3 12.3 0 0 1-3.81 2.58Q2.49 12 0 12q2.49 0 4.68.96 2.19.93 3.81 2.55t2.55 3.81" />
+                </svg> and GPT5 <svg class="icon-inline" role="img" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <title>OpenAI</title>
+                    <path
+                        d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" />
+                </svg></p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('workflow')">Clinical Workflow</button>
+            <button class="tab-btn" onclick="switchTab('knowledge')">Knowledge Base</button>
+        </div>
+
+        <!-- Tab 1: Clinical Workflow -->
+        <div id="tab-workflow" class="tab-content active">
+            <!-- Full Workflow Section -->
+            <div class="card">
+                <h2>Clinical Workflow</h2>
+                <p style="margin-bottom: 20px; color: var(--secondary-text);">Analyze clinical notes, extract data, and
+                    ask questions.</p>
+
+                <div class="form-group">
+                    <label for="noteInput">Clinical Note</label>
+                    <textarea id="noteInput" rows="8" placeholder="Paste clinical note here..."></textarea>
+                    <div class="file-input-wrapper">
+                        <span>Or upload text file:</span>
+                        <input type="file" id="noteFileInput" accept=".txt,.md">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="questionInput">Question (Optional)</label>
+                    <input type="text" id="questionInput"
+                        placeholder="e.g., Does this patient meet the criteria for statin therapy?">
+                </div>
+
+                <button onclick="runWorkflow()">Run Analysis</button>
+                <div class="loader" id="workflowLoader"></div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="card" id="resultsSection" style="display:none;">
+                <h2>Analysis Results</h2>
+
+                <div class="result-section">
+                    <h3>Summary</h3>
+                    <pre id="resSummary"></pre>
+                </div>
+
+                <div class="result-section">
+                    <h3>RAG Answer</h3>
+                    <pre id="resRag"></pre>
+                </div>
+
+                <div class="result-section">
+                    <h3>Structured Data</h3>
+                    <pre id="resStructured"></pre>
+                </div>
+
+                <div class="result-section">
+                    <h3>FHIR Bundle</h3>
+                    <pre id="resFhir"></pre>
+                </div>
+
+                <div class="result-section">
+                    <h3>Token Usage</h3>
+                    <pre id="resUsage"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Knowledge Base -->
+    <div id="tab-knowledge" class="tab-content">
+        <!-- RAG Knowledge Base Section -->
+        <div class="card">
+            <h2>Upload Document</h2>
+            <p style="margin-bottom: 20px; color: var(--secondary-text);">Add medical guidelines or reference
+                documents to the RAG system.</p>
+
+            <div class="form-group">
+                <label for="docTitle">Document Title</label>
+                <input type="text" id="docTitle"
+                    placeholder="e.g., American Heart Association Guidelines for Acute Coronary Syndrome 2025">
+            </div>
+
+            <div class="form-group">
+                <label for="docContent">Content</label>
+                <textarea id="docContent" rows="6" placeholder="Paste document text here..."></textarea>
+                <div class="file-input-wrapper">
+                    <span>Or upload text file:</span>
+                    <input type="file" id="ragFileInput" accept=".txt,.md">
+                </div>
+            </div>
+
+            <button onclick="uploadDocument()">Upload Document</button>
+            <div id="uploadStatus" style="margin-top: 10px;"></div>
+        </div>
+
+        <!-- Document Management Section -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin-bottom: 0; border: none;">Manage Documents</h2>
+                <button class="secondary" onclick="fetchDocuments()">Refresh List</button>
+            </div>
+            <ul id="docList">
+                <li style="justify-content: center; color: var(--secondary-text);">No documents loaded.</li>
+            </ul>
+        </div>
+
+        <!-- Selected Document View -->
+        <div class="card" id="selectedDocSection" style="display:none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin-bottom: 0; border: none;">Document Viewer</h2>
+                <button class="secondary"
+                    onclick="document.getElementById('selectedDocSection').style.display='none'">Close</button>
+            </div>
+            <h3 id="selectedDocTitle" style="margin-bottom: 15px;"></h3>
+            <pre id="selectedDocContent"></pre>
+        </div>
+    </div>
+
+    </div>
+
+    <script>
+        // --- Tab Handling ---
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            // Show selected tab content
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            // Activate selected tab button
+            // Find button that calls this function with this tabName
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => {
+                if (btn.getAttribute('onclick').includes(tabName)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // --- File Upload Handling ---
+        function setupFileUpload(inputId, textareaId) {
+            document.getElementById(inputId).addEventListener('change', function (event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById(textareaId).value = e.target.result;
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        setupFileUpload('ragFileInput', 'docContent');
+        setupFileUpload('noteFileInput', 'noteInput');
+
+        // --- API Interactions ---
+
+        async function uploadDocument() {
+            const title = document.getElementById("docTitle").value;
+            const content = document.getElementById("docContent").value;
+            const statusEl = document.getElementById("uploadStatus");
+
+            if (!title || !content) {
+                alert("Please provide both title and content.");
+                return;
+            }
+
+            statusEl.textContent = "Uploading...";
+            statusEl.style.color = "var(--secondary-text)";
+
+            try {
+                const res = await fetch("/documents/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ title, content })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || "Upload failed");
+                }
+
+                const data = await res.json();
+                statusEl.textContent = `Success! ID: ${data.id}`;
+                statusEl.style.color = "green";
+
+                // Clear inputs
+                document.getElementById("docTitle").value = "";
+                document.getElementById("docContent").value = "";
+                document.getElementById("ragFileInput").value = "";
+
+                fetchDocuments(); // Refresh list
+            } catch (e) {
+                statusEl.textContent = "Error: " + e.message;
+                statusEl.style.color = "red";
+            }
+        }
+
+        async function fetchDocuments() {
+            const listEl = document.getElementById("docList");
+            listEl.innerHTML = '<li style="justify-content: center;">Loading...</li>';
+
+            try {
+                const res = await fetch("/documents/");
+                const docs = await res.json();
+
+                listEl.innerHTML = "";
+                if (docs.length === 0) {
+                    listEl.innerHTML = '<li style="justify-content: center; color: var(--secondary-text);">No documents found.</li>';
+                    return;
+                }
+
+                docs.forEach(doc => {
+                    const li = document.createElement("li");
+
+                    const infoSpan = document.createElement("span");
+                    infoSpan.className = "doc-info";
+                    infoSpan.textContent = doc.title;
+
+                    const actionsDiv = document.createElement("div");
+                    actionsDiv.className = "doc-actions";
+
+                    // View Button
+                    const viewBtn = document.createElement("button");
+                    viewBtn.textContent = "View";
+                    viewBtn.className = "secondary";
+                    viewBtn.onclick = () => viewDocument(doc.id);
+
+                    // Delete Button
+                    const delBtn = document.createElement("button");
+                    delBtn.textContent = "Delete";
+                    delBtn.className = "danger";
+                    delBtn.onclick = () => deleteDocument(doc.id);
+
+                    actionsDiv.appendChild(viewBtn);
+                    actionsDiv.appendChild(delBtn);
+
+                    li.appendChild(infoSpan);
+                    li.appendChild(actionsDiv);
+                    listEl.appendChild(li);
+                });
+            } catch (e) {
+                listEl.innerHTML = `<li style="color: red;">Error loading documents: ${e.message}</li>`;
+            }
+        }
+
+        async function viewDocument(docId) {
+            const section = document.getElementById("selectedDocSection");
+            const titleEl = document.getElementById("selectedDocTitle");
+            const contentEl = document.getElementById("selectedDocContent");
+
+            titleEl.textContent = "Loading...";
+            contentEl.textContent = "";
+            section.style.display = "block";
+            section.scrollIntoView({ behavior: 'smooth' });
+
+            try {
+                const res = await fetch(`/documents/${docId}`);
+                if (!res.ok) throw new Error("Failed to fetch document details");
+
+                const doc = await res.json();
+                titleEl.textContent = doc.title;
+                contentEl.textContent = doc.content;
+            } catch (e) {
+                titleEl.textContent = "Error";
+                contentEl.textContent = e.message;
+            }
+        }
+
+        async function deleteDocument(docId) {
+            if (!confirm("Are you sure you want to delete this document?")) return;
+
+            try {
+                const res = await fetch(`/documents/${docId}`, { method: "DELETE" });
+                if (!res.ok) throw new Error("Failed to delete");
+                fetchDocuments();
+
+                // Hide view section if we deleted the currently viewed doc
+                document.getElementById("selectedDocSection").style.display = 'none';
+            } catch (e) {
+                alert("Error deleting document: " + e.message);
+            }
+        }
+
+        async function runWorkflow() {
+            const note = document.getElementById("noteInput").value;
+            const question = document.getElementById("questionInput").value;
+            const loader = document.getElementById("workflowLoader");
+            const resultsSection = document.getElementById("resultsSection");
+
+            if (!note) {
+                alert("Please enter a clinical note.");
+                return;
+            }
+
+            loader.style.display = "block";
+            resultsSection.style.display = "none";
+
+            try {
+                const res = await fetch("/full_workflow", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ note, question: question || null })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || "Workflow failed");
+                }
+
+                const data = await res.json();
+
+                document.getElementById("resSummary").textContent = data.summary;
+                document.getElementById("resRag").textContent = data.rag_answer || "N/A";
+                document.getElementById("resStructured").textContent = JSON.stringify(data.structured, null, 2);
+                document.getElementById("resFhir").textContent = JSON.stringify(data.fhir, null, 2);
+
+                if (data.usage) {
+                    const usageText = `Input Tokens: ${data.usage.input_tokens}\nOutput Tokens: ${data.usage.output_tokens}\nTotal Tokens: ${data.usage.total_tokens}`;
+                    document.getElementById("resUsage").textContent = usageText;
+                } else {
+                    document.getElementById("resUsage").textContent = "N/A";
+                }
+
+                resultsSection.style.display = "block";
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (e) {
+                alert("Error running workflow: " + e.message);
+            } finally {
+                loader.style.display = "none";
+            }
+        }
+
+        // Initial load
+        fetchDocuments();
+
+    </script>
+
+</body>
+
+</html>
