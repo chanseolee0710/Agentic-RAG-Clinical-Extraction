@@ -1,4 +1,4 @@
-# AI Medical Backend
+# Clinical Extraction using Agentic RAG
 
 This project is a comprehensive AI-powered medical documentation backend. It leverages OpenAI's GPT models to perform various tasks such as summarizing clinical notes, answering questions using Retrieval-Augmented Generation (RAG), extracting structured data, and mapping it to FHIR (Fast Healthcare Interoperability Resources) standards.
 
