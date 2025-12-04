@@ -1,9 +1,9 @@
 # Clinical Extraction using Agentic RAG
 
 Please reach out to Chanseo Lee with any feedback!
-The point of this project is to open-source and de-mystify agentic AI to the broader medical research community. 
+The point of this project is to open-source and de-mystify agentic AI to the broader medical research community. It provides an easy-to-use UI and minimal coding knowledge to execute a full clinical extraction workflow using an AI agent and a retrieval-augmented generation (RAG) system.
 
-This project is a comprehensive AI-powered medical documentation backend. It leverages OpenAI's GPT models to perform various tasks such as summarizing clinical notes, answering questions using Retrieval-Augmented Generation (RAG), extracting structured data, and mapping it to FHIR (Fast Healthcare Interoperability Resources) standards.
+This project is a comprehensive AI-powered backend for medical documentation, connected to a user-friendly interface. It leverages OpenAI's GPT models to perform various tasks such as summarizing clinical notes, answering questions, extracting structured data, and mapping it to FHIR (Fast Healthcare Interoperability Resources) standards.
 
 ## Features
 
